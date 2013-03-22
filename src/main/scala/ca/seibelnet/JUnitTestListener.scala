@@ -10,10 +10,10 @@ import Keys._
  */
 
 object JUnitTestReporting extends Plugin {
-	val testReportLocation = SettingKey[String]("./target/test-reports/")
+	val testReportLocation = SettingKey[String]("./target/reports/")
 	val reportingTask = TaskKey[Unit]("junit-xml-reporter")
   override def settings = Seq(
-	  testReportLocation := "./target/test-reports/",
+	  testReportLocation := "./target/reports/",
 		testListeners <+= testReportLocation map {path => new JUnitTestListener(path)}
   )
 }
