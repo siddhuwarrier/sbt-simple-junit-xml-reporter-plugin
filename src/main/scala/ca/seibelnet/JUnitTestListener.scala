@@ -9,12 +9,12 @@ import Keys._
  * Time: 12:02 PM
  */
 
-object JUnitTestReporting extends Plugin {
+object JUnitTestReportingPlugin extends Plugin {
 	val testReportLocation = SettingKey[String]("./target/test-reports")
 	val reportingTask = TaskKey[Unit]("junit-xml-reporter")
-  val newSettings = Seq(
+  override def settings = Seq(
 	  testReportLocation := "./target/test-reports",
-		testListeners <+= testReportLocation map {path => new JUnitTestListener(path)}
+		testListeners <<= testReportLocation map {path => new JUnitTestListener(path)}
   )
 }
 
