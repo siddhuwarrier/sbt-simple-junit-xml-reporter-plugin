@@ -4,13 +4,13 @@ name := "sbt-simple-junit-xml-reporter-plugin"
 
 organization := "ca.seibelnet"
 
-version := "0.2.0"
+version := "1.0.0"
 
 sbtPlugin := true
 
 publishMavenStyle := true
 
-publishTo := Some("CPG Nexus" at "http://dev-generic-app001.vega.cloud.ironport.com/content/repositories/releases/")
+publishTo := Some("Nexus" at "http://xxxx")
 
-credentials += Credentials("Sonatype Nexus Repository Manager", "dev-generic-app001.vega.cloud" +
-	".ironport.com", "admin", "I'm not telling you")
+credentials += Credentials("Sonatype Nexus Repository Manager", "xxxx", "xxxxx", "xxxx")
+

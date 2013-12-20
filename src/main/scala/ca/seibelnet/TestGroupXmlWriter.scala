@@ -6,7 +6,7 @@ import java.net.InetAddress
 import java.util.Date
 
 import xml.XML
-import org.scalatools.testing.{Result, Event}
+import sbt.testing.{Status, Event}
 import java.text.SimpleDateFormat
 
 /**
@@ -37,12 +37,15 @@ class TestGroupXmlWriter(val name: String) {
 
   def addEvent(testEvent: TestEvent) {
     testEvents += testEvent
-    for (e: Event <- testEvent.detail) {
+    testEvent.detail.foreach { event =>
       tests += 1
-      e.result() match {
-        case Result.Failure => failures += 1
-        case Result.Error => errors += 1
-        case Result.Skipped => skipped += 1
+      val methods = event.getClass.getMethods.map(_.getName) // methods
+        .sorted                             // sort
+        .filter(_ matches "(?i).*index.*")  // grep /index/i
+      event.status() match {
+        case Status.Failure => failures += 1
+        case Status.Error => errors += 1
+        case Status.Skipped => skipped += 1
         case _ => {}
       }
     }
@@ -57,14 +60,16 @@ class TestGroupXmlWriter(val name: String) {
         {
           for (e <- testEvents; t <- e.detail) yield
           {
-            <testcase classname={name} name={ t.testName() } time={"0"}>
+            <testcase classname={name} name={ t.fullyQualifiedName() } time={"0"}>
               {
-                t.result() match {
-                  case Result.Failure =>
-                    <failure message={t.error().getMessage} type={t.error().getClass.getName}>{t.error().getStackTrace.map { e => e.toString }.mkString("\n")}</failure>
-                  case Result.Error =>
-                    <error message={t.error().getMessage} type={t.error().getClass.getName}>{t.error().getStackTrace.map { e => e.toString }.mkString("\n")}</error>
-                  case Result.Skipped =>
+                t.status() match {
+                  case Status.Failure =>
+                    <failure message={t.throwable().get().getMessage} type={t.throwable().get().getClass.getName}>{
+                      t.throwable().get().getStackTrace.map { e => e.toString }.mkString("\n")}</failure>
+                  case Status.Error =>
+                    <error message={t.throwable().get.getMessage} type={t.throwable.get.getClass.getName}>{
+                      t.throwable.get.getStackTrace.map { e => e.toString }.mkString("\n")}</error>
+                  case Status.Skipped =>
                     <skipped/>
                   case _ => {}
                 }
